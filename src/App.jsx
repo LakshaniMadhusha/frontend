@@ -1,37 +1,24 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
 
-import './App.css'
-import ProductCard from './components/productCard'
+import HomePage from "./pages/homePage";
+import LoginPage from "./pages/loginPage";
+import RegisterPage from "./pages/registerPage";
+import AdminPage from "./pages/adminPage";
 
 function App() {
-  
-
   return (
-    <>
-      
-
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10">
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        
-        <ProductCard
-          name="Apple Laptop"
-          image="https://picsum.photos/id/237/300/300"
-          price="550"
-        />
-
-        <ProductCard
-          name="Apple"
-          image="https://picsum.photos/id/238/300/300"
-          price="550"
-        />
-
+    <BrowserRouter>
+      <div className="w-full h-screen flex justify-center items-center">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/admin/*" element={<AdminPage />} />
+        </Routes>
       </div>
-    </div>
-
-
-
-        
-    </>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
