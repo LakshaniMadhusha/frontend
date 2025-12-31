@@ -77,6 +77,7 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import MediaUpload from "../../utils/mediaUpload";
 
 export default function AddProductAdminPage() {
 
@@ -85,22 +86,34 @@ export default function AddProductAdminPage() {
     const [altNames, setAlternativeNames] = useState("");
     const [labelledPrice, setLabeledPrice] = useState("");
     const [price, setPrice] = useState("");
-    const [images, setImages] = useState("");
+    const [images, setImages] = useState([]);
     const [description, setDescription] = useState("");
     const [stock, setStock] = useState("");
     const [isAvailable, setIsAvailable] = useState(true);
     const [category, setCategory] = useState("Cream");
     const navigate = useNavigate(); 
 
-    function handleSubmit(){
-        const altNamesInArray = altNames.split(',');;
+    async function handleSubmit(){
+
+      const promisesArray = [];
+
+      for (let i = 0; i < images.length; i++) {
+        const promise= MediaUpload(images[i]);
+        promisesArray[i]=promise;
+      }
+
+      const responses = await Promise.all(promisesArray);
+      console.log(responses)
+
+      
+        const altNamesInArray = altNames.split(',');
         const productData={
             productId:productId,
             name:productName,
             altNames:altNamesInArray,
             labelledPrice:labelledPrice,
             price:price,
-            images:[],
+            images:responses,
             description:description,
             stock:stock,
             isAvailable:isAvailable,
@@ -193,7 +206,10 @@ export default function AddProductAdminPage() {
           <div className="md:col-span-2">
             <label className="text-sm font-semibold text-gray-600">Images (URL)</label>
             <input
-              type="text" value={images} onChange={(e)=>{setImages(e.target.value)}}
+            multiple
+              type="file" onChange={(e)=>{
+                setImages(e.target.files);
+              }}
               placeholder="https://example.com/image.jpg"
               className="mt-1 w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-black focus:outline-none"
             />
