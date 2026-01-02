@@ -35,40 +35,52 @@
 //     )
 // }
 
+// For image upload test
 
 // project url
 // https://oyhmssmiiddjxwdeeoip.supabase.co
 
 // API key
 // sb_publishable_R7KMPMmw9UwItMSzpMS9Gg_9RhUKUqK
-import { useState } from "react";
-import toast from "react-hot-toast";
-import MediaUpload from "../utils/mediaUpload";
+// import { useState } from "react";
+// import toast from "react-hot-toast";
+// import MediaUpload from "../utils/mediaUpload";
 
+// export default function TestPage() {
+//   const [file, setFile] = useState(null);
+
+//   async function handleUpload() {
+//     try {
+//       const url = await MediaUpload(file);
+//       console.log("Uploaded file URL:", url);
+//       toast.success("File uploaded successfully!");
+//     } catch (error) {
+//       console.error(error);
+//       toast.error(error.message);
+//     }
+//   }
+//   return(
+//     <div className="w-full h-screen flex justify-center items-center">
+//        <input type="file"
+//         // accept="image/*" 
+//         onChange={
+//           (e)=>{
+//             console.log(e)
+//             setFile(e.target.files[0])
+//           }
+//         }/>
+//         <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer">Upload</button>
+//     </div>
+//   )
+// }
+
+
+// For loader component test
+import Loader from "../components/loader";
 export default function TestPage() {
-  const [file, setFile] = useState(null);
-
-  async function handleUpload() {
-    try {
-      const url = await MediaUpload(file);
-      console.log("Uploaded file URL:", url);
-      toast.success("File uploaded successfully!");
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message);
-    }
-  }
-  return(
-    <div className="w-full h-screen flex justify-center items-center">
-       <input type="file"
-        // accept="image/*" 
-        onChange={
-          (e)=>{
-            console.log(e)
-            setFile(e.target.files[0])
-          }
-        }/>
-        <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer">Upload</button>
+  return (
+    <div className="w-full h-screen">
+      <Loader />
     </div>
-  )
+  );
 }

@@ -1,122 +1,47 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { BiPlus, BiTrash } from "react-icons/bi";
+import { BiEdit, BiPlus, BiTrash } from "react-icons/bi";
 import { Link , useNavigate } from "react-router-dom";
+import Loader from "../../components/loader";
 
-const sampleProducts=[
-    {
-    productId: "COS001",
-    name: "Rose Glow Face Cream",
-    altNames: ["Rose Cream", "Glow Moisturizer"],
-    labelledPrice: 3500,
-    price: 2990,
-    images: [
-      "/images/rose-glow-cream-1.jpg",
-      "/images/rose-glow-cream-2.jpg"
-    ],
-    description: "A lightweight rose-infused face cream that hydrates and enhances natural glow.",
-    stock: 120,
-    isAvailable: true,
-    category: "cosmetics"
-  },
-  {
-    productId: "COS002",
-    name: "Vitamin C Brightening Serum",
-    altNames: ["Vit C Serum", "Bright Serum"],
-    labelledPrice: 4200,
-    price: 3790,
-    images: [
-      "/images/vitamin-c-serum-1.jpg"
-    ],
-    description: "Powerful vitamin C serum that reduces dark spots and brightens skin tone.",
-    stock: 85,
-    isAvailable: true,
-    category: "cosmetics"
-  },
-  {
-    productId: "COS003",
-    name: "Matte Finish Lipstick - Nude Pink",
-    altNames: ["Nude Pink Lipstick"],
-    labelledPrice: 1800,
-    price: 1490,
-    images: [
-      "/images/nude-pink-lipstick.jpg"
-    ],
-    description: "Long-lasting matte lipstick with a smooth, non-drying formula.",
-    stock: 200,
-    isAvailable: true,
-    category: "cosmetics"
-  },
-  {
-    productId: "COS004",
-    name: "Aloe Vera Facial Cleanser",
-    altNames: ["Aloe Cleanser", "Face Wash Aloe"],
-    labelledPrice: 2500,
-    price: 2190,
-    images: [
-      "/images/aloe-cleanser.jpg"
-    ],
-    description: "Gentle facial cleanser enriched with aloe vera for soothing and hydration.",
-    stock: 150,
-    isAvailable: true,
-    category: "cosmetics"
-  },
-  {
-    productId: "COS005",
-    name: "Waterproof Mascara",
-    altNames: ["Long Lash Mascara"],
-    labelledPrice: 2200,
-    price: 1890,
-    images: [
-      "/images/waterproof-mascara.jpg"
-    ],
-    description: "Smudge-proof and waterproof mascara for longer, fuller lashes.",
-    stock: 95,
-    isAvailable: true,
-    category: "cosmetics"
-  },
-  {
-    productId: "COS006",
-    name: "Herbal Face Mask - Turmeric & Honey",
-    altNames: ["Turmeric Mask", "Herbal Mask"],
-    labelledPrice: 3000,
-    price: 2590,
-    images: [
-      "/images/turmeric-honey-mask.jpg"
-    ],
-    description: "Natural herbal face mask that nourishes skin and restores brightness.",
-    stock: 70,
-    isAvailable: true,
-    category: "cosmetics"
-  }
-]
+
 
 export default function ProductAdminPage() {
 
-    const [products, setProducts]=useState(sampleProducts);
+    const [products, setProducts]=useState([]);
 
-    // const [a,setA]=useState(0);
-    
+      //delete
+    const [isLoading,setIsLoading]=useState(true);
+   
     // backend data retrieval will be here
     // setProducts()
 
     useEffect(
         ()=>{
+          if(isLoading){
             axios.get(import.meta.env.VITE_BACKEND_URL+"/api/products")
                 .then(
                     (res)=>{
                     setProducts(res.data)
+                    setIsLoading(false);
                 }
             )
+          }
         },
-        [a]
+      [isLoading]    //delete
     )
 
    const navigate=useNavigate();
 
   return (
     <div className="w-full h-full border-[3px]">
+      
+      {isLoading ?(
+        <Loader />
+       ) :
+       (
+
       <table>
         <thead>
           <tr>
@@ -145,7 +70,7 @@ export default function ProductAdminPage() {
                   <td className="p-[10px]">{product.labelledPrice}</td>
                   <td className="p-[10px]">{product.category}</td>
                   <td className="p-[10px]">{product.stock}</td>
-                  <td className="p-[10px]">
+                  <td className="p-[10px] flex flex-row justify-center items-center ">
                     <BiTrash className="text-red-600 text-3xl p-[7px] rounded-full cursor-pointer hover:bg-red-300" onClick={
                         ()=>{
                             const token=localStorage.getItem("token");
@@ -153,33 +78,44 @@ export default function ProductAdminPage() {
                                 navigate("/login");
                                 return;
                             }
-                            axios.delete(import.meta.env.VITE_BACKEND_URL+"/api/products/"+product._id,
+                            axios.delete(import.meta.env.VITE_BACKEND_URL + "/api/products/" + product.productId,
                                {
                                  headers:{
-                                    Authorization: `Bearer ${token}`
-                                }
+                                    Authorization: `Bearer ${token}` ,
+                                },
                             }
-                        ).then(
+                        )
+                        .then(
                                 (res)=>{
                                     console.log("Product deleted Successfully");
                                     console.log(res.data);
                                     toast.success("Product deleted Successfully");
 
-                                    // setA(a+1);
+                                   //delete
+                                    setIsLoading(!isLoading);
+                                    const updatedProducts = products.filter((p) => p.productId !== product.productId);
+    setProducts(updatedProducts);
 
-                                    setProducts((prev) =>
-                                    prev.filter((p) => p._id !== product._id)
-                                    );
+                                    
 
                                 }
                             ).catch(
                                 (error)=>{
-                                    console.log("Error deleting product:",error);
+                                    console.error("Error deleting product:",error);
                                     toast.error("Failed to delete product");
                                 }
                             )
                         }
                     }/>
+                    <BiEdit onClick={
+                      ()=>{
+                          navigate("/admin/updateProduct" ,
+                            {
+                              state: product 
+                            }
+                          )
+                      }
+                    } className="text-blue-900 text-3xl p-[7px] rounded-full cursor-pointer hover:bg-blue-300" />
 
                   </td>
                 </tr>
@@ -189,7 +125,7 @@ export default function ProductAdminPage() {
         }
         </tbody>
       </table>
-
+       )}
       <Link
         to={"/admin/newProduct"}
         className="fixed right-[60px] bottom-[60px] p-[20px] text-white bg-black rounded-full shadow-2xl"
